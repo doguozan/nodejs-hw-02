@@ -23,3 +23,43 @@ export const getContactById = async (contactId) => {
         throw error;
     }
 };
+
+export const createContact = async (contactData) => {
+    try {
+        console.log('Yeni iletişim oluşturuluyor:', contactData);
+        const newContact = await Contact.create(contactData);
+        console.log('Oluşturulan iletişim:', newContact);
+        return newContact;
+    } catch (error) {
+        console.error('İletişim oluşturulurken hata oluştu:', error);
+        throw error;
+    }
+};
+
+export const updateContact = async (contactId, contactData) => {
+    try {
+        console.log(`ID'si ${contactId} olan iletişim güncelleniyor:`, contactData);
+        const updatedContact = await Contact.findByIdAndUpdate(
+            contactId,
+            { $set: contactData },
+            { new: true }
+        );
+        console.log('Güncellenen iletişim:', updatedContact);
+        return updatedContact;
+    } catch (error) {
+        console.error('İletişim güncellenirken hata oluştu:', error);
+        throw error;
+    }
+};
+
+export const deleteContact = async (contactId) => {
+    try {
+        console.log(`ID'si ${contactId} olan iletişim siliniyor...`);
+        const deletedContact = await Contact.findByIdAndDelete(contactId);
+        console.log('Silinen iletişim:', deletedContact);
+        return deletedContact;
+    } catch (error) {
+        console.error('İletişim silinirken hata oluştu:', error);
+        throw error;
+    }
+};
