@@ -1,11 +1,56 @@
+// src/services/contact.js
 import Contact from '../db/models/Contact.js';
 
-export const getAllContacts = async () => {
+export const getAllContacts = async (options = {}) => {
     try {
         console.log('Tüm iletişimler getiriliyor...');
-        const contacts = await Contact.find();
-        console.log('Bulunan iletişimler:', contacts);
-        return contacts;
+
+        // Sayfalandırma parametreleri
+        const {
+            page = 1,
+            perPage = 10,
+            sortBy = 'name',
+            sortOrder = 'asc',
+            type,
+            isFavourite
+        } = options;
+
+        // Filtreleme için sorgu oluştur
+        const query = {};
+
+        // İsteğe bağlı filtreleme: contactType
+        if (type) {
+            query.contactType = type;
+        }
+
+        // İsteğe bağlı filtreleme: isFavourite
+        if (isFavourite !== undefined) {
+            query.isFavourite = isFavourite === 'true';
+        }
+
+        // Toplam öğe sayısını al
+        const totalItems = await Contact.countDocuments(query);
+
+        // Toplam sayfa sayısını hesapla
+        const totalPages = Math.ceil(totalItems / perPage);
+
+        // Sıralama için sorgu oluştur
+        const sortQuery = {};
+        sortQuery[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+        // Veritabanından iletişimleri getir
+        const contacts = await Contact.find(query)
+            .sort(sortQuery)
+            .skip((page - 1) * perPage)
+            .limit(perPage);
+
+        console.log(`Bulunan iletişimler: ${contacts.length} / ${totalItems}`);
+
+        return {
+            contacts,
+            totalItems,
+            totalPages
+        };
     } catch (error) {
         console.error('İletişimler getirilirken hata oluştu:', error);
         throw error;

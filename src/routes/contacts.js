@@ -1,22 +1,23 @@
-import express from 'express';
-import * as contactsController from '../controllers/contactsController.js';
-import { ctrlWrapper } from '../utils/ctrlWrapper.js';
+import express from "express";
+import * as contactsController from "../controllers/contacts.js";
+import { validateBody, isValidId } from "../middlewares/validation.js";
+import { createContactSchema, updateContactSchema } from "../schemas/contact.js";
 
 const router = express.Router();
 
-// GET tüm iletişimleri getir
-router.get('/', ctrlWrapper(contactsController.getAllContacts));
+// Tüm iletişimleri getir
+router.get("/", contactsController.getAllContacts);
 
-// GET belirli bir iletişimi getir
-router.get('/:contactId', ctrlWrapper(contactsController.getContactById));
+// ID'ye göre iletişim getir
+router.get("/:contactId", isValidId, contactsController.getContactById);
 
-// POST yeni iletişim oluştur
-router.post('/', ctrlWrapper(contactsController.createContact));
+// Yeni iletişim oluştur (doğrulama ile)
+router.post("/", validateBody(createContactSchema), contactsController.createContact);
 
-// PATCH iletişim güncelle
-router.patch('/:contactId', ctrlWrapper(contactsController.updateContact));
+// İletişimi güncelle (doğrulama ile)
+router.patch("/:contactId", isValidId, validateBody(updateContactSchema), contactsController.updateContact);
 
-// DELETE iletişim sil
-router.delete('/:contactId', ctrlWrapper(contactsController.deleteContact));
+// İletişimi sil
+router.delete("/:contactId", isValidId, contactsController.deleteContact);
 
 export default router;
