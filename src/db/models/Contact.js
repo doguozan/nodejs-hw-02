@@ -22,6 +22,11 @@ const contactSchema = new mongoose.Schema({
         required: true,
         default: 'personal',
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
 }, { timestamps: true });
 
 // Model oluşturulduğunda bir log ekleyelim

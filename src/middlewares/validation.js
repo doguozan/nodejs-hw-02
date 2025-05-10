@@ -1,5 +1,4 @@
-// src/middlewares/validation.js
-import { isValidObjectId } from "mongoose";
+import { isValidObjectId } from 'mongoose';
 
 // Doğrulama şemasını argüman olarak alacak ve isteğin body'sinin doğrulaması için middleware döndürecek
 export const validateBody = (schema) => {
@@ -10,6 +9,7 @@ export const validateBody = (schema) => {
             return res.status(400).json({
                 status: 400,
                 message: error.details[0].message,
+                data: null
             });
         }
 
@@ -24,7 +24,8 @@ export const isValidId = (req, res, next) => {
     if (!isValidObjectId(contactId)) {
         return res.status(400).json({
             status: 400,
-            message: "Invalid contact ID format",
+            message: 'Invalid contact ID format',
+            data: null
         });
     }
 

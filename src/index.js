@@ -1,18 +1,19 @@
-import 'dotenv/config';
-import { setupServer } from './server.js';
-import { initMongoConnection } from './db/initMongoConnection.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { app } from './app.js';
 
-// Uygulamayı başlat
-const startApp = async () => {
-    try {
-        // Önce MongoDB bağlantısını kur
-        await initMongoConnection();
-        // Sonra sunucuyu başlat
-        setupServer();
-    } catch (error) {
-        console.error('Uygulama başlatılamadı:', error);
+dotenv.config();
+
+const { DB_HOST, PORT = 3007 } = process.env;
+
+mongoose.connect(DB_HOST)
+    .then(() => {
+        console.log('Database connection successful');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch(error => {
+        console.error('Database connection error:', error.message);
         process.exit(1);
-    }
-};
-
-startApp();
+    });
